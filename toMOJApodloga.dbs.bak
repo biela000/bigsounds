@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="toMOJApodloga" database="PostgreSQL" id="2e501f4f-bf65-4fd6-8e8c-fd7cf948409b" >
+	<schema name="schema_" >
+		<table name="artists" prior="creators" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="stage_name" type="text" mandatory="y" />
+			<column name="birth_date" type="date" />
+			<column name="website" type="text" />
+			<column name="profile_picture" type="text" />
+			<index name="pk_tbl_2" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="artists_aliases" prior="artists_alias" >
+			<column name="artist_id" type="integer" mandatory="y" />
+			<column name="artist_alias" type="text" mandatory="y" />
+			<fk name="fk_artists_aliases_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="artists_releases" prior="tbl" >
+			<column name="artist_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="artist_role" type="artist_role_enum" mandatory="y" />
+			<fk name="fk_artists_releases_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+			<fk name="fk_artists_releases_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="genres" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="text" mandatory="y" />
+			<column name="subgenre_of" type="integer" />
+			<index name="pk_tbl_0" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="subgenre_of" pk="id" />
+			</fk>
+		</table>
+		<table name="labels" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="text" mandatory="y" />
+			<index name="pk_tbl_3" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="release_covers" prior="release_cover" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="cover" type="text" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="used_since" type="date" />
+			<column name="used_until" type="date" />
+			<index name="pk_release_covers" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_release_covers_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="title" type="varchar" length="100" mandatory="y" />
+			<column name="release_date" type="date" mandatory="y" />
+			<column name="format" type="release_format_enum" mandatory="y" />
+			<column name="main_cover_id" type="integer" />
+			<index name="pk_tbl_1" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_releases_release_covers" to_schema="schema_" to_table="release_covers" >
+				<fk_column name="main_cover_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases_genres" prior="tbl" >
+			<column name="genre_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<fk name="fk_releases_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="genre_id" pk="id" />
+			</fk>
+			<fk name="fk_releases_genres_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases_labels" prior="tbl" >
+			<column name="label_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<fk name="fk_releases_labels_labels" to_schema="schema_" to_table="labels" >
+				<fk_column name="label_id" pk="id" />
+			</fk>
+			<fk name="fk_releases_labels_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="title" type="varchar" length="100" mandatory="y" />
+			<column name="duration" type="interval" />
+			<index name="pk_tbl" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="songs_artists" prior="songs_artits" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="artist_id" type="integer" mandatory="y" />
+			<fk name="fk_songs_artists_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_artists_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs_genres" prior="songs_gen" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="genre_id" type="integer" mandatory="y" />
+			<fk name="fk_songs_genres_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="genre_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs_releases" prior="songs_relea" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="added_date" type="date" />
+			<column name="removed_date" type="date" />
+			<index name="unq_songs_releases_release_id" unique="UNIQUE_KEY" >
+				<column name="release_id" />
+			</index>
+			<fk name="fk_songs_releases_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_releases_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="79fea3b4-159b-4d54-bec8-8ba6e791a36c" >
+		<diagram name="Default Diagram" id="233df00c-1342-42d6-af08-1ab82b1e3e8c" show_relation="columns" >
+			<entity schema="schema_" name="artists" color="C1D8EE" x="152" y="266" />
+			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="456" y="190" />
+			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="494" />
+			<entity schema="schema_" name="genres" color="C1D8EE" x="57" y="57" />
+			<entity schema="schema_" name="labels" color="C1D8EE" x="76" y="741" />
+			<entity schema="schema_" name="release_covers" color="C1D8EE" x="1045" y="722" />
+			<entity schema="schema_" name="releases" color="C1D8EE" x="779" y="551" />
+			<entity schema="schema_" name="releases_genres" color="C1D8EE" x="722" y="133" />
+			<entity schema="schema_" name="releases_labels" color="C1D8EE" x="361" y="741" />
+			<entity schema="schema_" name="songs" color="C1D8EE" x="1083" y="247" />
+			<entity schema="schema_" name="songs_artists" color="C1D8EE" x="627" y="323" />
+			<entity schema="schema_" name="songs_genres" color="C1D8EE" x="1045" y="57" />
+			<entity schema="schema_" name="songs_releases" color="C1D8EE" x="1159" y="513" />
+		</diagram>
+	</diagram_group>
+</project>
