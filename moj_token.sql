@@ -1,0 +1,1 @@
+--myslales ze tu bedzie moj token?
