@@ -1,5 +1,5 @@
-*
-
-!.gitignore
-!toMOJApodloga.dbs
-!toMOJApodloga.dbs.bak
+ai
+scripts
+tmp
+recovery
+video
