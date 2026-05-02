@@ -4,8 +4,15 @@
 		<table name="artist_follows" prior="artist_followers" >
 			<column name="user_id" type="integer" mandatory="y" />
 			<column name="followed_artist_id" type="integer" mandatory="y" />
-			<column name="date_from" type="date" mandatory="y" />
-			<column name="date_until" type="date" />
+			<column name="date_from" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_until" type="timestamp" />
+			<index name="pk_artist_follows" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="followed_artist_id" />
+				<column name="date_from" />
+			</index>
 			<fk name="fk_artist_followers_users" to_schema="schema_" to_table="users" >
 				<fk_column name="user_id" pk="id" />
 			</fk>
@@ -27,6 +34,10 @@
 		<table name="artists_aliases" prior="artists_alias" >
 			<column name="artist_id" type="integer" mandatory="y" />
 			<column name="artist_alias" type="text" mandatory="y" />
+			<index name="pk_artists_aliases" unique="PRIMARY_KEY" >
+				<column name="artist_id" />
+				<column name="artist_alias" />
+			</index>
 			<fk name="fk_artists_aliases_artists" to_schema="schema_" to_table="artists" >
 				<fk_column name="artist_id" pk="id" />
 			</fk>
@@ -35,6 +46,11 @@
 			<column name="artist_id" type="integer" mandatory="y" />
 			<column name="release_id" type="integer" mandatory="y" />
 			<column name="artist_role" type="artist_role_enum" mandatory="y" />
+			<index name="pk_artists_releases" unique="PRIMARY_KEY" >
+				<column name="artist_id" />
+				<column name="release_id" />
+				<column name="artist_role" />
+			</index>
 			<fk name="fk_artists_releases_releases" to_schema="schema_" to_table="releases" >
 				<fk_column name="release_id" pk="id" />
 			</fk>
@@ -53,6 +69,41 @@
 				<fk_column name="subgenre_of" pk="id" />
 			</fk>
 		</table>
+		<table name="import_errors" prior="import_er" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="import_id" type="integer" mandatory="y" />
+			<column name="error_message" type="text" mandatory="y" />
+			<column name="raw_json_record" type="jsonb" mandatory="y" />
+			<index name="pk_import_errors" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_import_errors_import_requests" to_schema="schema_" to_table="import_requests" >
+				<fk_column name="import_id" pk="id" />
+			</fk>
+		</table>
+		<table name="import_requests" prior="import_requ" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="status" type="status_enum" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="file_name" type="text" mandatory="y" />
+			<column name="file_hash" type="text" mandatory="y" />
+			<column name="total_streams_found" type="text" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="streams_successfully_added" type="text" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="upload_date" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="completed_date" type="timestamp" />
+			<index name="pk_import_requests" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_import_requests_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
 		<table name="labels" prior="tbl" >
 			<column name="id" type="integer" mandatory="y" />
 			<column name="name" type="text" mandatory="y" />
@@ -63,8 +114,15 @@
 		<table name="playlist_likes" prior="playlist_li" >
 			<column name="playlist_id" type="integer" mandatory="y" />
 			<column name="user_id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_playlist_likes" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="user_id" />
+				<column name="date_added" />
+			</index>
 			<fk name="fk_playlist_likes_users" to_schema="schema_" to_table="users" >
 				<fk_column name="user_id" pk="id" />
 			</fk>
@@ -75,10 +133,17 @@
 		<table name="playlist_songs" prior="playlist_" >
 			<column name="playlist_id" type="integer" mandatory="y" />
 			<column name="song_id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
 			<column name="user_id" type="integer" mandatory="y" />
 			<column name="name" type="text" mandatory="y" />
+			<index name="pk_playlist_songs" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="song_id" />
+				<column name="date_added" />
+			</index>
 			<fk name="fk_playlist_songs_playlists" to_schema="schema_" to_table="playlists" >
 				<fk_column name="playlist_id" pk="id" />
 			</fk>
@@ -91,9 +156,14 @@
 		</table>
 		<table name="playlists" prior="playl" >
 			<column name="id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
 			<column name="cover" type="text" />
+			<column name="visibility" type="visibility_enum" mandatory="y" >
+				<defo><![CDATA[public]]></defo>
+			</column>
 			<index name="pk_playlists" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
@@ -101,6 +171,10 @@
 		<table name="playlists_owners" prior="playlists_owner" >
 			<column name="playlist_id" type="integer" mandatory="y" />
 			<column name="user_id" type="integer" mandatory="y" />
+			<index name="pk_playlists_owners" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="user_id" />
+			</index>
 			<fk name="fk_playlists_owners_playlists" to_schema="schema_" to_table="playlists" >
 				<fk_column name="playlist_id" pk="id" />
 			</fk>
@@ -112,8 +186,10 @@
 			<column name="id" type="integer" mandatory="y" />
 			<column name="cover" type="text" mandatory="y" />
 			<column name="release_id" type="integer" mandatory="y" />
-			<column name="used_since" type="date" />
-			<column name="used_until" type="date" />
+			<column name="used_since" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="used_until" type="timestamp" />
 			<index name="pk_release_covers" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
@@ -124,8 +200,15 @@
 		<table name="release_likes" prior="release_li" >
 			<column name="release_id" type="integer" mandatory="y" />
 			<column name="user_id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_release_likes" unique="PRIMARY_KEY" >
+				<column name="release_id" />
+				<column name="user_id" />
+				<column name="date_added" />
+			</index>
 			<fk name="fk_release_likes_releases" to_schema="schema_" to_table="releases" >
 				<fk_column name="release_id" pk="id" />
 			</fk>
@@ -136,6 +219,10 @@
 		<table name="release_reviews" prior="release_re" >
 			<column name="release_id" type="integer" mandatory="y" />
 			<column name="review_id" type="integer" mandatory="y" />
+			<index name="pk_release_reviews" unique="PRIMARY_KEY" >
+				<column name="release_id" />
+				<column name="review_id" />
+			</index>
 			<fk name="fk_release_reviews_releases" to_schema="schema_" to_table="releases" >
 				<fk_column name="release_id" pk="id" />
 			</fk>
@@ -159,6 +246,10 @@
 		<table name="releases_genres" prior="tbl" >
 			<column name="genre_id" type="integer" mandatory="y" />
 			<column name="release_id" type="integer" mandatory="y" />
+			<index name="pk_releases_genres" unique="PRIMARY_KEY" >
+				<column name="genre_id" />
+				<column name="release_id" />
+			</index>
 			<fk name="fk_releases_genres_genres" to_schema="schema_" to_table="genres" >
 				<fk_column name="genre_id" pk="id" />
 			</fk>
@@ -169,6 +260,10 @@
 		<table name="releases_labels" prior="tbl" >
 			<column name="label_id" type="integer" mandatory="y" />
 			<column name="release_id" type="integer" mandatory="y" />
+			<index name="pk_releases_labels" unique="PRIMARY_KEY" >
+				<column name="label_id" />
+				<column name="release_id" />
+			</index>
 			<fk name="fk_releases_labels_labels" to_schema="schema_" to_table="labels" >
 				<fk_column name="label_id" pk="id" />
 			</fk>
@@ -180,8 +275,10 @@
 			<column name="id" type="integer" mandatory="y" />
 			<column name="score" type="integer" mandatory="y" />
 			<column name="user_id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
 			<index name="pk_song_reviews" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
@@ -192,8 +289,15 @@
 		<table name="song_likes" prior="song_l" >
 			<column name="user_id" type="integer" mandatory="y" />
 			<column name="song_id" type="integer" mandatory="y" />
-			<column name="date_added" type="date" mandatory="y" />
-			<column name="date_removed" type="date" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_song_likes" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="song_id" />
+				<column name="date_added" />
+			</index>
 			<fk name="fk_song_likes_users" to_schema="schema_" to_table="users" >
 				<fk_column name="user_id" pk="id" />
 			</fk>
@@ -204,6 +308,10 @@
 		<table name="song_reviews" prior="song_revie" >
 			<column name="song_id" type="integer" mandatory="y" />
 			<column name="review_id" type="integer" mandatory="y" />
+			<index name="pk_song_reviews_0" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="review_id" />
+			</index>
 			<fk name="fk_song_reviews_songs" to_schema="schema_" to_table="songs" >
 				<fk_column name="song_id" pk="id" />
 			</fk>
@@ -222,6 +330,10 @@
 		<table name="songs_artists" prior="songs_artits" >
 			<column name="song_id" type="integer" mandatory="y" />
 			<column name="artist_id" type="integer" mandatory="y" />
+			<index name="pk_songs_artists" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="artist_id" />
+			</index>
 			<fk name="fk_songs_artists_songs" to_schema="schema_" to_table="songs" >
 				<fk_column name="song_id" pk="id" />
 			</fk>
@@ -232,6 +344,10 @@
 		<table name="songs_genres" prior="songs_gen" >
 			<column name="song_id" type="integer" mandatory="y" />
 			<column name="genre_id" type="integer" mandatory="y" />
+			<index name="pk_songs_genres" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="genre_id" />
+			</index>
 			<fk name="fk_songs_genres_songs" to_schema="schema_" to_table="songs" >
 				<fk_column name="song_id" pk="id" />
 			</fk>
@@ -242,8 +358,15 @@
 		<table name="songs_releases" prior="songs_relea" >
 			<column name="song_id" type="integer" mandatory="y" />
 			<column name="release_id" type="integer" mandatory="y" />
-			<column name="added_date" type="date" />
-			<column name="removed_date" type="date" />
+			<column name="added_date" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="removed_date" type="timestamp" />
+			<index name="pk_songs_releases" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="release_id" />
+				<column name="added_date" />
+			</index>
 			<fk name="fk_songs_releases_songs" to_schema="schema_" to_table="songs" >
 				<fk_column name="song_id" pk="id" />
 			</fk>
@@ -271,7 +394,7 @@
 			<column name="id" type="integer" mandatory="y" />
 			<column name="song_id" type="integer" mandatory="y" />
 			<column name="user_id" type="integer" mandatory="y" />
-			<column name="stream_datetime" type="date" mandatory="y" />
+			<column name="stream_timestamp" prior="stream_datetime" type="timestamp" mandatory="y" />
 			<index name="pk_streams" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
@@ -285,8 +408,15 @@
 		<table name="user_follows" prior="usfollows" >
 			<column name="user_id" type="integer" mandatory="y" />
 			<column name="followed_user_id" type="integer" mandatory="y" />
-			<column name="date_from" type="date" mandatory="y" />
-			<column name="date_unitl" type="date" />
+			<column name="date_from" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_unitl" type="timestamp" />
+			<index name="pk_user_follows" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="followed_user_id" />
+				<column name="date_from" />
+			</index>
 			<fk name="fk_user_follows_users" to_schema="schema_" to_table="users" >
 				<fk_column name="user_id" pk="id" />
 			</fk>
@@ -298,8 +428,10 @@
 			<column name="id" type="integer" mandatory="y" />
 			<column name="name" type="text" mandatory="y" />
 			<column name="passwd" type="text" mandatory="y" />
-			<column name="date_joined" type="date" mandatory="y" />
-			<column name="date_left" type="date" />
+			<column name="date_joined" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_left" type="timestamp" />
 			<index name="pk_users" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
@@ -307,33 +439,35 @@
 	</schema>
 	<diagram_group name="Default" id="79fea3b4-159b-4d54-bec8-8ba6e791a36c" >
 		<diagram name="Default Diagram" id="233df00c-1342-42d6-af08-1ab82b1e3e8c" confirmed="y" show_relation="columns" >
-			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="456" y="209" />
-			<entity schema="schema_" name="artists" color="C1D8EE" x="114" y="589" />
-			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="361" y="513" />
-			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="836" />
-			<entity schema="schema_" name="genres" color="C1D8EE" x="57" y="399" />
-			<entity schema="schema_" name="labels" color="C1D8EE" x="76" y="1083" />
-			<entity schema="schema_" name="playlist_likes" color="C1D8EE" x="1919" y="285" />
-			<entity schema="schema_" name="playlist_songs" color="C1D8EE" x="1520" y="1007" />
-			<entity schema="schema_" name="playlists" color="C1D8EE" x="1691" y="817" />
-			<entity schema="schema_" name="playlists_owners" color="C1D8EE" x="1824" y="627" />
-			<entity schema="schema_" name="release_covers" color="C1D8EE" x="1045" y="1064" />
-			<entity schema="schema_" name="release_likes" color="C1D8EE" x="1881" y="475" />
-			<entity schema="schema_" name="release_reviews" color="C1D8EE" x="1387" y="798" />
-			<entity schema="schema_" name="releases" color="C1D8EE" x="589" y="893" />
-			<entity schema="schema_" name="releases_genres" color="C1D8EE" x="722" y="475" />
-			<entity schema="schema_" name="releases_labels" color="C1D8EE" x="361" y="1083" />
-			<entity schema="schema_" name="reviews" color="C1D8EE" x="1558" y="551" />
-			<entity schema="schema_" name="song_likes" color="C1D8EE" x="1710" y="171" />
-			<entity schema="schema_" name="song_reviews" color="C1D8EE" x="1349" y="646" />
-			<entity schema="schema_" name="songs" color="C1D8EE" x="855" y="665" />
-			<entity schema="schema_" name="songs_artists" color="C1D8EE" x="437" y="741" />
-			<entity schema="schema_" name="songs_genres" color="C1D8EE" x="1045" y="399" />
-			<entity schema="schema_" name="songs_releases" color="C1D8EE" x="1159" y="855" />
-			<entity schema="schema_" name="streaming_accounts" color="C1D8EE" x="1368" y="57" />
-			<entity schema="schema_" name="streams" color="C1D8EE" x="1083" y="684" />
-			<entity schema="schema_" name="user_follows" color="C1D8EE" x="950" y="133" />
-			<entity schema="schema_" name="users" color="C1D8EE" x="1273" y="418" />
+			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="456" y="247" />
+			<entity schema="schema_" name="artists" color="C1D8EE" x="114" y="627" />
+			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="361" y="551" />
+			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="874" />
+			<entity schema="schema_" name="genres" color="C1D8EE" x="57" y="437" />
+			<entity schema="schema_" name="import_errors" color="C1D8EE" x="2147" y="380" />
+			<entity schema="schema_" name="import_requests" color="C1D8EE" x="1919" y="57" />
+			<entity schema="schema_" name="labels" color="C1D8EE" x="76" y="1121" />
+			<entity schema="schema_" name="playlist_likes" color="C1D8EE" x="1919" y="323" />
+			<entity schema="schema_" name="playlist_songs" color="C1D8EE" x="1520" y="1045" />
+			<entity schema="schema_" name="playlists" color="C1D8EE" x="1691" y="855" />
+			<entity schema="schema_" name="playlists_owners" color="C1D8EE" x="1824" y="665" />
+			<entity schema="schema_" name="release_covers" color="C1D8EE" x="1045" y="1102" />
+			<entity schema="schema_" name="release_likes" color="C1D8EE" x="1881" y="513" />
+			<entity schema="schema_" name="release_reviews" color="C1D8EE" x="1387" y="836" />
+			<entity schema="schema_" name="releases" color="C1D8EE" x="589" y="931" />
+			<entity schema="schema_" name="releases_genres" color="C1D8EE" x="722" y="513" />
+			<entity schema="schema_" name="releases_labels" color="C1D8EE" x="361" y="1121" />
+			<entity schema="schema_" name="reviews" color="C1D8EE" x="1558" y="589" />
+			<entity schema="schema_" name="song_likes" color="C1D8EE" x="1710" y="209" />
+			<entity schema="schema_" name="song_reviews" color="C1D8EE" x="1349" y="684" />
+			<entity schema="schema_" name="songs" color="C1D8EE" x="855" y="703" />
+			<entity schema="schema_" name="songs_artists" color="C1D8EE" x="437" y="779" />
+			<entity schema="schema_" name="songs_genres" color="C1D8EE" x="1045" y="437" />
+			<entity schema="schema_" name="songs_releases" color="C1D8EE" x="1159" y="893" />
+			<entity schema="schema_" name="streaming_accounts" color="C1D8EE" x="1368" y="95" />
+			<entity schema="schema_" name="streams" color="C1D8EE" x="1083" y="722" />
+			<entity schema="schema_" name="user_follows" color="C1D8EE" x="950" y="171" />
+			<entity schema="schema_" name="users" color="C1D8EE" x="1273" y="456" />
 		</diagram>
 	</diagram_group>
 </project>
