@@ -244,14 +244,27 @@
 			<column name="release_id" type="integer" mandatory="y" />
 			<column name="added_date" type="date" />
 			<column name="removed_date" type="date" />
-			<index name="unq_songs_releases_release_id" unique="UNIQUE_KEY" >
-				<column name="release_id" />
-			</index>
 			<fk name="fk_songs_releases_songs" to_schema="schema_" to_table="songs" >
 				<fk_column name="song_id" pk="id" />
 			</fk>
 			<fk name="fk_songs_releases_releases" to_schema="schema_" to_table="releases" >
 				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="streaming_accounts" prior="streaming_accoun" >
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="streaming_id" type="text" mandatory="y" />
+			<column name="access_token" type="text" mandatory="y" />
+			<column name="refresh_token" type="text" mandatory="y" />
+			<column name="token_expires_at" type="timestamp" mandatory="y" />
+			<index name="pk_streaming_accounts" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+			</index>
+			<index name="unq_streaming_accounts" unique="UNIQUE_KEY" >
+				<column name="streaming_id" />
+			</index>
+			<fk name="fk_streaming_accounts_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
 			</fk>
 		</table>
 		<table name="streams" prior="stre" >
@@ -294,32 +307,33 @@
 	</schema>
 	<diagram_group name="Default" id="79fea3b4-159b-4d54-bec8-8ba6e791a36c" >
 		<diagram name="Default Diagram" id="233df00c-1342-42d6-af08-1ab82b1e3e8c" confirmed="y" show_relation="columns" >
-			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="456" y="133" />
-			<entity schema="schema_" name="artists" color="C1D8EE" x="114" y="513" />
-			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="361" y="437" />
-			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="760" />
-			<entity schema="schema_" name="genres" color="C1D8EE" x="57" y="323" />
-			<entity schema="schema_" name="labels" color="C1D8EE" x="76" y="1007" />
-			<entity schema="schema_" name="playlist_likes" color="C1D8EE" x="1919" y="209" />
-			<entity schema="schema_" name="playlist_songs" color="C1D8EE" x="1520" y="931" />
-			<entity schema="schema_" name="playlists" color="C1D8EE" x="1691" y="741" />
-			<entity schema="schema_" name="playlists_owners" color="C1D8EE" x="1824" y="551" />
-			<entity schema="schema_" name="release_covers" color="C1D8EE" x="1045" y="988" />
-			<entity schema="schema_" name="release_likes" color="C1D8EE" x="1881" y="399" />
-			<entity schema="schema_" name="release_reviews" color="C1D8EE" x="1387" y="722" />
-			<entity schema="schema_" name="releases" color="C1D8EE" x="589" y="817" />
-			<entity schema="schema_" name="releases_genres" color="C1D8EE" x="722" y="399" />
-			<entity schema="schema_" name="releases_labels" color="C1D8EE" x="361" y="1007" />
-			<entity schema="schema_" name="reviews" color="C1D8EE" x="1558" y="494" />
-			<entity schema="schema_" name="song_likes" color="C1D8EE" x="1615" y="209" />
-			<entity schema="schema_" name="song_reviews" color="C1D8EE" x="1349" y="570" />
-			<entity schema="schema_" name="songs" color="C1D8EE" x="855" y="589" />
-			<entity schema="schema_" name="songs_artists" color="C1D8EE" x="437" y="665" />
-			<entity schema="schema_" name="songs_genres" color="C1D8EE" x="1045" y="323" />
-			<entity schema="schema_" name="songs_releases" color="C1D8EE" x="1159" y="779" />
-			<entity schema="schema_" name="streams" color="C1D8EE" x="1083" y="608" />
-			<entity schema="schema_" name="user_follows" color="C1D8EE" x="950" y="57" />
-			<entity schema="schema_" name="users" color="C1D8EE" x="1273" y="342" />
+			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="456" y="209" />
+			<entity schema="schema_" name="artists" color="C1D8EE" x="114" y="589" />
+			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="361" y="513" />
+			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="836" />
+			<entity schema="schema_" name="genres" color="C1D8EE" x="57" y="399" />
+			<entity schema="schema_" name="labels" color="C1D8EE" x="76" y="1083" />
+			<entity schema="schema_" name="playlist_likes" color="C1D8EE" x="1919" y="285" />
+			<entity schema="schema_" name="playlist_songs" color="C1D8EE" x="1520" y="1007" />
+			<entity schema="schema_" name="playlists" color="C1D8EE" x="1691" y="817" />
+			<entity schema="schema_" name="playlists_owners" color="C1D8EE" x="1824" y="627" />
+			<entity schema="schema_" name="release_covers" color="C1D8EE" x="1045" y="1064" />
+			<entity schema="schema_" name="release_likes" color="C1D8EE" x="1881" y="475" />
+			<entity schema="schema_" name="release_reviews" color="C1D8EE" x="1387" y="798" />
+			<entity schema="schema_" name="releases" color="C1D8EE" x="589" y="893" />
+			<entity schema="schema_" name="releases_genres" color="C1D8EE" x="722" y="475" />
+			<entity schema="schema_" name="releases_labels" color="C1D8EE" x="361" y="1083" />
+			<entity schema="schema_" name="reviews" color="C1D8EE" x="1558" y="551" />
+			<entity schema="schema_" name="song_likes" color="C1D8EE" x="1710" y="171" />
+			<entity schema="schema_" name="song_reviews" color="C1D8EE" x="1349" y="646" />
+			<entity schema="schema_" name="songs" color="C1D8EE" x="855" y="665" />
+			<entity schema="schema_" name="songs_artists" color="C1D8EE" x="437" y="741" />
+			<entity schema="schema_" name="songs_genres" color="C1D8EE" x="1045" y="399" />
+			<entity schema="schema_" name="songs_releases" color="C1D8EE" x="1159" y="855" />
+			<entity schema="schema_" name="streaming_accounts" color="C1D8EE" x="1368" y="57" />
+			<entity schema="schema_" name="streams" color="C1D8EE" x="1083" y="684" />
+			<entity schema="schema_" name="user_follows" color="C1D8EE" x="950" y="133" />
+			<entity schema="schema_" name="users" color="C1D8EE" x="1273" y="418" />
 		</diagram>
 	</diagram_group>
 </project>

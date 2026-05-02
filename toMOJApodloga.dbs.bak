@@ -294,7 +294,7 @@
 	</schema>
 	<diagram_group name="Default" id="79fea3b4-159b-4d54-bec8-8ba6e791a36c" >
 		<diagram name="Default Diagram" id="233df00c-1342-42d6-af08-1ab82b1e3e8c" confirmed="y" show_relation="columns" >
-			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="589" y="209" />
+			<entity schema="schema_" name="artist_follows" color="C1D8EE" x="456" y="133" />
 			<entity schema="schema_" name="artists" color="C1D8EE" x="114" y="513" />
 			<entity schema="schema_" name="artists_aliases" color="C1D8EE" x="361" y="437" />
 			<entity schema="schema_" name="artists_releases" color="C1D8EE" x="95" y="760" />
