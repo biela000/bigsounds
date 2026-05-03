@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="toMOJApodloga" database="PostgreSQL" id="2e501f4f-bf65-4fd6-8e8c-fd7cf948409b" >
+	<schema name="schema_" >
+		<table name="artist_follows" prior="artist_followers" >
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="followed_artist_id" type="integer" mandatory="y" />
+			<column name="date_from" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_until" type="timestamp" />
+			<index name="pk_artist_follows" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="followed_artist_id" />
+				<column name="date_from" />
+			</index>
+			<fk name="fk_artist_followers_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_artist_followers_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="followed_artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="artists" prior="creators" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="stage_name" type="text" mandatory="y" />
+			<column name="birth_date" type="date" />
+			<column name="website" type="text" />
+			<column name="profile_picture" type="text" />
+			<column name="description" type="text" />
+			<index name="pk_tbl_2" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="artists_aliases" prior="artists_alias" >
+			<column name="artist_id" type="integer" mandatory="y" />
+			<column name="artist_alias" type="text" mandatory="y" />
+			<index name="pk_artists_aliases" unique="PRIMARY_KEY" >
+				<column name="artist_id" />
+				<column name="artist_alias" />
+			</index>
+			<fk name="fk_artists_aliases_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="artists_releases" prior="tbl" >
+			<column name="artist_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="artist_role" type="artist_role_enum" mandatory="y" />
+			<index name="pk_artists_releases" unique="PRIMARY_KEY" >
+				<column name="artist_id" />
+				<column name="release_id" />
+				<column name="artist_role" />
+			</index>
+			<fk name="fk_artists_releases_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+			<fk name="fk_artists_releases_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="genres" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="text" mandatory="y" />
+			<column name="subgenre_of" type="integer" />
+			<index name="pk_tbl_0" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="subgenre_of" pk="id" />
+			</fk>
+		</table>
+		<table name="import_errors" prior="import_er" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="import_id" type="integer" mandatory="y" />
+			<column name="error_message" type="text" mandatory="y" />
+			<column name="raw_json_record" type="jsonb" mandatory="y" />
+			<index name="pk_import_errors" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_import_errors_import_requests" to_schema="schema_" to_table="import_requests" >
+				<fk_column name="import_id" pk="id" />
+			</fk>
+		</table>
+		<table name="import_requests" prior="import_requ" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="status" type="status_enum" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="file_name" type="text" mandatory="y" />
+			<column name="file_hash" type="text" mandatory="y" />
+			<column name="total_streams_found" type="integer" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="streams_successfully_added" type="integer" mandatory="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="upload_date" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="completed_date" type="timestamp" />
+			<index name="pk_import_requests" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_import_requests_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="labels" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="text" mandatory="y" />
+			<index name="pk_tbl_3" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="playlist_likes" prior="playlist_li" >
+			<column name="playlist_id" type="integer" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_playlist_likes" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="user_id" />
+				<column name="date_added" />
+			</index>
+			<fk name="fk_playlist_likes_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_playlist_likes_playlists" to_schema="schema_" to_table="playlists" >
+				<fk_column name="playlist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="playlist_songs" prior="playlist_" >
+			<column name="playlist_id" type="integer" mandatory="y" />
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<index name="pk_playlist_songs" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="song_id" />
+				<column name="date_added" />
+			</index>
+			<fk name="fk_playlist_songs_playlists" to_schema="schema_" to_table="playlists" >
+				<fk_column name="playlist_id" pk="id" />
+			</fk>
+			<fk name="fk_playlist_songs_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_playlist_songs_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="playlists" prior="playl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<column name="cover" type="text" />
+			<column name="visibility" type="visibility_enum" mandatory="y" >
+				<defo><![CDATA[public]]></defo>
+			</column>
+			<column name="name" type="text" />
+			<index name="pk_playlists" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="playlists_owners" prior="playlists_owner" >
+			<column name="playlist_id" type="integer" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<index name="pk_playlists_owners" unique="PRIMARY_KEY" >
+				<column name="playlist_id" />
+				<column name="user_id" />
+			</index>
+			<fk name="fk_playlists_owners_playlists" to_schema="schema_" to_table="playlists" >
+				<fk_column name="playlist_id" pk="id" />
+			</fk>
+			<fk name="fk_playlists_owners_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="release_covers" prior="release_cover" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="cover" type="text" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="used_since" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="used_until" type="timestamp" />
+			<index name="pk_release_covers" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_release_covers_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="release_likes" prior="release_li" >
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_release_likes" unique="PRIMARY_KEY" >
+				<column name="release_id" />
+				<column name="user_id" />
+				<column name="date_added" />
+			</index>
+			<fk name="fk_release_likes_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+			<fk name="fk_release_likes_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="release_reviews" prior="release_re" >
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="review_id" type="integer" mandatory="y" />
+			<index name="pk_release_reviews" unique="PRIMARY_KEY" >
+				<column name="release_id" />
+				<column name="review_id" />
+			</index>
+			<fk name="fk_release_reviews_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+			<fk name="fk_release_reviews_reviews" to_schema="schema_" to_table="reviews" >
+				<fk_column name="review_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="title" type="varchar" length="100" mandatory="y" />
+			<column name="release_date" type="date" mandatory="y" />
+			<column name="format" type="release_format_enum" mandatory="y" />
+			<column name="main_cover_id" type="integer" />
+			<index name="pk_tbl_1" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_releases_release_covers" to_schema="schema_" to_table="release_covers" >
+				<fk_column name="main_cover_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases_genres" prior="tbl" >
+			<column name="genre_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<index name="pk_releases_genres" unique="PRIMARY_KEY" >
+				<column name="genre_id" />
+				<column name="release_id" />
+			</index>
+			<fk name="fk_releases_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="genre_id" pk="id" />
+			</fk>
+			<fk name="fk_releases_genres_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="releases_labels" prior="tbl" >
+			<column name="label_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<index name="pk_releases_labels" unique="PRIMARY_KEY" >
+				<column name="label_id" />
+				<column name="release_id" />
+			</index>
+			<fk name="fk_releases_labels_labels" to_schema="schema_" to_table="labels" >
+				<fk_column name="label_id" pk="id" />
+			</fk>
+			<fk name="fk_releases_labels_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="reviews" prior="song_reviews" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="score" type="integer" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_song_reviews" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_song_reviews_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="song_likes" prior="song_l" >
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="date_added" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_removed" type="timestamp" />
+			<index name="pk_song_likes" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="song_id" />
+				<column name="date_added" />
+			</index>
+			<fk name="fk_song_likes_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_song_likes_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+		</table>
+		<table name="song_reviews" prior="song_revie" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="review_id" type="integer" mandatory="y" />
+			<index name="pk_song_reviews_0" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="review_id" />
+			</index>
+			<fk name="fk_song_reviews_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_song_reviews_reviews" to_schema="schema_" to_table="reviews" >
+				<fk_column name="review_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs" prior="tbl" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="title" type="varchar" length="100" mandatory="y" />
+			<column name="duration" type="interval" mandatory="y" />
+			<index name="pk_tbl" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="songs_artists" prior="songs_artits" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="artist_id" type="integer" mandatory="y" />
+			<index name="pk_songs_artists" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="artist_id" />
+			</index>
+			<fk name="fk_songs_artists_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_artists_artists" to_schema="schema_" to_table="artists" >
+				<fk_column name="artist_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs_genres" prior="songs_gen" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="genre_id" type="integer" mandatory="y" />
+			<index name="pk_songs_genres" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="genre_id" />
+			</index>
+			<fk name="fk_songs_genres_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_genres_genres" to_schema="schema_" to_table="genres" >
+				<fk_column name="genre_id" pk="id" />
+			</fk>
+		</table>
+		<table name="songs_releases" prior="songs_relea" >
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="release_id" type="integer" mandatory="y" />
+			<column name="added_date" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="removed_date" type="timestamp" />
+			<index name="pk_songs_releases" unique="PRIMARY_KEY" >
+				<column name="song_id" />
+				<column name="release_id" />
+				<column name="added_date" />
+			</index>
+			<fk name="fk_songs_releases_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+			<fk name="fk_songs_releases_releases" to_schema="schema_" to_table="releases" >
+				<fk_column name="release_id" pk="id" />
+			</fk>
+		</table>
+		<table name="streaming_accounts" prior="streaming_accoun" >
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="streaming_id" type="text" mandatory="y" />
+			<column name="access_token" type="text" mandatory="y" />
+			<column name="refresh_token" type="text" mandatory="y" />
+			<column name="token_expires_at" type="timestamp" mandatory="y" />
+			<index name="pk_streaming_accounts" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+			</index>
+			<index name="unq_streaming_accounts" unique="UNIQUE_KEY" >
+				<column name="streaming_id" />
+			</index>
+			<fk name="fk_streaming_accounts_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="streams" prior="stre" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="song_id" type="integer" mandatory="y" />
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="stream_timestamp" prior="stream_datetime" type="timestamp" mandatory="y" />
+			<index name="pk_streams" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_streams_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_streams_songs" to_schema="schema_" to_table="songs" >
+				<fk_column name="song_id" pk="id" />
+			</fk>
+		</table>
+		<table name="user_follows" prior="usfollows" >
+			<column name="user_id" type="integer" mandatory="y" />
+			<column name="followed_user_id" type="integer" mandatory="y" />
+			<column name="date_from" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_until" prior="date_unitl" type="timestamp" />
+			<index name="pk_user_follows" unique="PRIMARY_KEY" >
+				<column name="user_id" />
+				<column name="followed_user_id" />
+				<column name="date_from" />
+			</index>
+			<fk name="fk_user_follows_users" to_schema="schema_" to_table="users" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_user_follows_users_0" to_schema="schema_" to_table="users" >
+				<fk_column name="followed_user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="users" prior="u" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="text" mandatory="y" />
+			<column name="passwd" type="text" mandatory="y" />
+			<column name="date_joined" type="timestamp" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="date_left" type="timestamp" />
+			<index name="pk_users" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="79fea3b4-159b-4d54-bec8-8ba6e791a36c" >
+		<diagram name="Default Diagram" id="233df00c-1342-42d6-af08-1ab82b1e3e8c" confirmed="y" show_relation="columns" >
+			<entity schema="schema_" name="artist_follows" color="C1EECF" x="1083" y="494" />
+			<entity schema="schema_" name="artists" color="EEC1C4" x="798" y="266" />
+			<entity schema="schema_" name="artists_aliases" color="EEC1C4" x="817" y="95" />
+			<entity schema="schema_" name="artists_releases" color="EEC1C4" x="361" y="380" />
+			<entity schema="schema_" name="genres" color="EEC1C4" x="494" y="1121" />
+			<entity schema="schema_" name="import_errors" color="C1D8EE" x="1919" y="1121" />
+			<entity schema="schema_" name="import_requests" color="C1D8EE" x="1881" y="798" />
+			<entity schema="schema_" name="labels" color="EEC1C4" x="76" y="969" />
+			<entity schema="schema_" name="playlist_likes" color="C1EECF" x="1539" y="323" />
+			<entity schema="schema_" name="playlist_songs" color="C1EECF" x="1368" y="323" />
+			<entity schema="schema_" name="playlists" color="C1EECF" x="1482" y="57" />
+			<entity schema="schema_" name="playlists_owners" color="C1EECF" x="1729" y="342" />
+			<entity schema="schema_" name="release_covers" color="EEC1C4" x="57" y="627" />
+			<entity schema="schema_" name="release_likes" color="C1EECF" x="570" y="893" />
+			<entity schema="schema_" name="release_reviews" color="C1D8EE" x="1083" y="1045" />
+			<entity schema="schema_" name="releases" color="EEC1C4" x="323" y="703" />
+			<entity schema="schema_" name="releases_genres" color="EEC1C4" x="228" y="1140" />
+			<entity schema="schema_" name="releases_labels" color="EEC1C4" x="57" y="798" />
+			<entity schema="schema_" name="reviews" color="C1D8EE" x="1463" y="1083" />
+			<entity schema="schema_" name="song_likes" color="C1EECF" x="1083" y="798" />
+			<entity schema="schema_" name="song_reviews" color="C1D8EE" x="893" y="1140" />
+			<entity schema="schema_" name="songs" color="EEC1C4" x="817" y="703" />
+			<entity schema="schema_" name="songs_artists" color="EEC1C4" x="817" y="532" />
+			<entity schema="schema_" name="songs_genres" color="EEC1C4" x="741" y="1140" />
+			<entity schema="schema_" name="songs_releases" color="EEC1C4" x="570" y="722" />
+			<entity schema="schema_" name="streaming_accounts" color="C1D8EE" x="1900" y="646" />
+			<entity schema="schema_" name="streams" color="C1EECF" x="1083" y="646" />
+			<entity schema="schema_" name="user_follows" color="C1D8EE" x="1691" y="988" />
+			<entity schema="schema_" name="users" color="C1D8EE" x="1463" y="703" />
+			<script name="SQL_Editor" id="d4cf632a-ddc3-4e3e-aab6-84ddfd81ad42" language="SQL" confirmed="y" >
+				<string><![CDATA[CREATE SCHEMA IF NOT EXISTS schema_;
+
+CREATE  TABLE schema_.artists ( 
+	id                   integer  NOT NULL  ,
+	stage_name           text  NOT NULL  ,
+	birth_date           date    ,
+	website              text    ,
+	profile_picture      text    ,
+	description          text    ,
+	CONSTRAINT pk_tbl_2 PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.artists_aliases ( 
+	artist_id            integer  NOT NULL  ,
+	artist_alias         text  NOT NULL  ,
+	CONSTRAINT pk_artists_aliases PRIMARY KEY ( artist_id, artist_alias ),
+	CONSTRAINT fk_artists_aliases_artists FOREIGN KEY ( artist_id ) REFERENCES schema_.artists( id )   
+ );
+
+CREATE  TABLE schema_.genres ( 
+	id                   integer  NOT NULL  ,
+	name                 text  NOT NULL  ,
+	subgenre_of          integer    ,
+	CONSTRAINT pk_tbl_0 PRIMARY KEY ( id ),
+	CONSTRAINT fk_genres_genres FOREIGN KEY ( subgenre_of ) REFERENCES schema_.genres( id )   
+ );
+
+CREATE  TABLE schema_.labels ( 
+	id                   integer  NOT NULL  ,
+	name                 text  NOT NULL  ,
+	CONSTRAINT pk_tbl_3 PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.playlists ( 
+	id                   integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	cover                text    ,
+	visibility           visibility_enum DEFAULT public NOT NULL  ,
+	CONSTRAINT pk_playlists PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.songs ( 
+	id                   integer  NOT NULL  ,
+	title                varchar(100)  NOT NULL  ,
+	duration             interval  NOT NULL  ,
+	CONSTRAINT pk_tbl PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.songs_artists ( 
+	song_id              integer  NOT NULL  ,
+	artist_id            integer  NOT NULL  ,
+	CONSTRAINT pk_songs_artists PRIMARY KEY ( song_id, artist_id ),
+	CONSTRAINT fk_songs_artists_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   ,
+	CONSTRAINT fk_songs_artists_artists FOREIGN KEY ( artist_id ) REFERENCES schema_.artists( id )   
+ );
+
+CREATE  TABLE schema_.songs_genres ( 
+	song_id              integer  NOT NULL  ,
+	genre_id             integer  NOT NULL  ,
+	CONSTRAINT pk_songs_genres PRIMARY KEY ( song_id, genre_id ),
+	CONSTRAINT fk_songs_genres_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   ,
+	CONSTRAINT fk_songs_genres_genres FOREIGN KEY ( genre_id ) REFERENCES schema_.genres( id )   
+ );
+
+CREATE  TABLE schema_.users ( 
+	id                   integer  NOT NULL  ,
+	name                 text  NOT NULL  ,
+	passwd               text  NOT NULL  ,
+	date_joined          timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_left            timestamp    ,
+	CONSTRAINT pk_users PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.artist_follows ( 
+	user_id              integer  NOT NULL  ,
+	followed_artist_id   integer  NOT NULL  ,
+	date_from            timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_until           timestamp    ,
+	CONSTRAINT pk_artist_follows PRIMARY KEY ( user_id, followed_artist_id, date_from ),
+	CONSTRAINT fk_artist_followers_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   ,
+	CONSTRAINT fk_artist_followers_artists FOREIGN KEY ( followed_artist_id ) REFERENCES schema_.artists( id )   
+ );
+
+CREATE  TABLE schema_.import_requests ( 
+	id                   integer  NOT NULL  ,
+	status               status_enum  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	file_name            text  NOT NULL  ,
+	file_hash            text  NOT NULL  ,
+	total_streams_found  text DEFAULT 0 NOT NULL  ,
+	streams_successfully_added text DEFAULT 0 NOT NULL  ,
+	upload_date          timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	completed_date       timestamp    ,
+	CONSTRAINT pk_import_requests PRIMARY KEY ( id ),
+	CONSTRAINT fk_import_requests_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.playlist_likes ( 
+	playlist_id          integer  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	CONSTRAINT pk_playlist_likes PRIMARY KEY ( playlist_id, user_id, date_added ),
+	CONSTRAINT fk_playlist_likes_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   ,
+	CONSTRAINT fk_playlist_likes_playlists FOREIGN KEY ( playlist_id ) REFERENCES schema_.playlists( id )   
+ );
+
+CREATE  TABLE schema_.playlist_songs ( 
+	playlist_id          integer  NOT NULL  ,
+	song_id              integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	user_id              integer  NOT NULL  ,
+	name                 text  NOT NULL  ,
+	CONSTRAINT pk_playlist_songs PRIMARY KEY ( playlist_id, song_id, date_added ),
+	CONSTRAINT fk_playlist_songs_playlists FOREIGN KEY ( playlist_id ) REFERENCES schema_.playlists( id )   ,
+	CONSTRAINT fk_playlist_songs_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   ,
+	CONSTRAINT fk_playlist_songs_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.playlists_owners ( 
+	playlist_id          integer  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	CONSTRAINT pk_playlists_owners PRIMARY KEY ( playlist_id, user_id ),
+	CONSTRAINT fk_playlists_owners_playlists FOREIGN KEY ( playlist_id ) REFERENCES schema_.playlists( id )   ,
+	CONSTRAINT fk_playlists_owners_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.reviews ( 
+	id                   integer  NOT NULL  ,
+	score                integer  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	CONSTRAINT pk_song_reviews PRIMARY KEY ( id ),
+	CONSTRAINT fk_song_reviews_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.song_likes ( 
+	user_id              integer  NOT NULL  ,
+	song_id              integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	CONSTRAINT pk_song_likes PRIMARY KEY ( user_id, song_id, date_added ),
+	CONSTRAINT fk_song_likes_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   ,
+	CONSTRAINT fk_song_likes_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   
+ );
+
+CREATE  TABLE schema_.song_reviews ( 
+	song_id              integer  NOT NULL  ,
+	review_id            integer  NOT NULL  ,
+	CONSTRAINT pk_song_reviews_0 PRIMARY KEY ( song_id, review_id ),
+	CONSTRAINT fk_song_reviews_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   ,
+	CONSTRAINT fk_song_reviews_reviews FOREIGN KEY ( review_id ) REFERENCES schema_.reviews( id )   
+ );
+
+CREATE  TABLE schema_.streaming_accounts ( 
+	user_id              integer  NOT NULL  ,
+	streaming_id         text  NOT NULL  ,
+	access_token         text  NOT NULL  ,
+	refresh_token        text  NOT NULL  ,
+	token_expires_at     timestamp  NOT NULL  ,
+	CONSTRAINT pk_streaming_accounts PRIMARY KEY ( user_id ),
+	CONSTRAINT unq_streaming_accounts UNIQUE ( streaming_id ) ,
+	CONSTRAINT fk_streaming_accounts_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.streams ( 
+	id                   integer  NOT NULL  ,
+	song_id              integer  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	stream_timestamp     timestamp  NOT NULL  ,
+	CONSTRAINT pk_streams PRIMARY KEY ( id ),
+	CONSTRAINT fk_streams_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   ,
+	CONSTRAINT fk_streams_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id )   
+ );
+
+CREATE  TABLE schema_.user_follows ( 
+	user_id              integer  NOT NULL  ,
+	followed_user_id     integer  NOT NULL  ,
+	date_from            timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_unitl           timestamp    ,
+	CONSTRAINT pk_user_follows PRIMARY KEY ( user_id, followed_user_id, date_from ),
+	CONSTRAINT fk_user_follows_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id )   ,
+	CONSTRAINT fk_user_follows_users_0 FOREIGN KEY ( followed_user_id ) REFERENCES schema_.users( id )   
+ );
+
+CREATE  TABLE schema_.import_errors ( 
+	id                   integer  NOT NULL  ,
+	import_id            integer  NOT NULL  ,
+	error_message        text  NOT NULL  ,
+	raw_json_record      jsonb  NOT NULL  ,
+	CONSTRAINT pk_import_errors PRIMARY KEY ( id ),
+	CONSTRAINT fk_import_errors_import_requests FOREIGN KEY ( import_id ) REFERENCES schema_.import_requests( id )   
+ );
+
+CREATE  TABLE schema_.artists_releases ( 
+	artist_id            integer  NOT NULL  ,
+	release_id           integer  NOT NULL  ,
+	artist_role          artist_role_enum  NOT NULL  ,
+	CONSTRAINT pk_artists_releases PRIMARY KEY ( artist_id, release_id, artist_role )
+ );
+
+CREATE  TABLE schema_.release_covers ( 
+	id                   integer  NOT NULL  ,
+	cover                text  NOT NULL  ,
+	release_id           integer  NOT NULL  ,
+	used_since           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	used_until           timestamp    ,
+	CONSTRAINT pk_release_covers PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.release_likes ( 
+	release_id           integer  NOT NULL  ,
+	user_id              integer  NOT NULL  ,
+	date_added           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	date_removed         timestamp    ,
+	CONSTRAINT pk_release_likes PRIMARY KEY ( release_id, user_id, date_added )
+ );
+
+CREATE  TABLE schema_.release_reviews ( 
+	release_id           integer  NOT NULL  ,
+	review_id            integer  NOT NULL  ,
+	CONSTRAINT pk_release_reviews PRIMARY KEY ( release_id, review_id )
+ );
+
+CREATE  TABLE schema_.releases ( 
+	id                   integer  NOT NULL  ,
+	title                varchar(100)  NOT NULL  ,
+	release_date         date  NOT NULL  ,
+	format               release_format_enum  NOT NULL  ,
+	main_cover_id        integer    ,
+	CONSTRAINT pk_tbl_1 PRIMARY KEY ( id )
+ );
+
+CREATE  TABLE schema_.releases_genres ( 
+	genre_id             integer  NOT NULL  ,
+	release_id           integer  NOT NULL  ,
+	CONSTRAINT pk_releases_genres PRIMARY KEY ( genre_id, release_id )
+ );
+
+CREATE  TABLE schema_.releases_labels ( 
+	label_id             integer  NOT NULL  ,
+	release_id           integer  NOT NULL  ,
+	CONSTRAINT pk_releases_labels PRIMARY KEY ( label_id, release_id )
+ );
+
+CREATE  TABLE schema_.songs_releases ( 
+	song_id              integer  NOT NULL  ,
+	release_id           integer  NOT NULL  ,
+	added_date           timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  ,
+	removed_date         timestamp    ,
+	CONSTRAINT pk_songs_releases PRIMARY KEY ( song_id, release_id, added_date )
+ );
+
+ALTER TABLE schema_.artists_releases ADD CONSTRAINT fk_artists_releases_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.artists_releases ADD CONSTRAINT fk_artists_releases_artists FOREIGN KEY ( artist_id ) REFERENCES schema_.artists( id );
+
+ALTER TABLE schema_.release_covers ADD CONSTRAINT fk_release_covers_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.release_likes ADD CONSTRAINT fk_release_likes_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.release_likes ADD CONSTRAINT fk_release_likes_users FOREIGN KEY ( user_id ) REFERENCES schema_.users( id );
+
+ALTER TABLE schema_.release_reviews ADD CONSTRAINT fk_release_reviews_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.release_reviews ADD CONSTRAINT fk_release_reviews_reviews FOREIGN KEY ( review_id ) REFERENCES schema_.reviews( id );
+
+ALTER TABLE schema_.releases ADD CONSTRAINT fk_releases_release_covers FOREIGN KEY ( main_cover_id ) REFERENCES schema_.release_covers( id );
+
+ALTER TABLE schema_.releases_genres ADD CONSTRAINT fk_releases_genres_genres FOREIGN KEY ( genre_id ) REFERENCES schema_.genres( id );
+
+ALTER TABLE schema_.releases_genres ADD CONSTRAINT fk_releases_genres_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.releases_labels ADD CONSTRAINT fk_releases_labels_labels FOREIGN KEY ( label_id ) REFERENCES schema_.labels( id );
+
+ALTER TABLE schema_.releases_labels ADD CONSTRAINT fk_releases_labels_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+ALTER TABLE schema_.songs_releases ADD CONSTRAINT fk_songs_releases_songs FOREIGN KEY ( song_id ) REFERENCES schema_.songs( id );
+
+ALTER TABLE schema_.songs_releases ADD CONSTRAINT fk_songs_releases_releases FOREIGN KEY ( release_id ) REFERENCES schema_.releases( id );
+
+]]></string>
+			</script>
+		</diagram>
+	</diagram_group>
+</project>
