@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS schema_.streams CASCADE;
 DROP TABLE IF EXISTS schema_.streaming_accounts CASCADE;
 DROP TABLE IF EXISTS schema_.song_reviews CASCADE;
 DROP TABLE IF EXISTS schema_.song_likes CASCADE;
-DROP TABLE IF EXISTS schema_.playlists_owners CASCADE;
+DROP TABLE IF EXISTS schema_.playlist_owners CASCADE;
 DROP TABLE IF EXISTS schema_.playlist_songs CASCADE;
 DROP TABLE IF EXISTS schema_.playlist_likes CASCADE;
 DROP TABLE IF EXISTS schema_.import_requests CASCADE;
