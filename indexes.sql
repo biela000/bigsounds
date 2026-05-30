@@ -1,3 +1,4 @@
+
 --foreign key indexes
 CREATE INDEX streams_user_id_index ON
 schema_.streams (user_id);
@@ -16,16 +17,18 @@ schema_.artists_releases (release_id);
 
 --search indexes
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 CREATE INDEX artists_stage_name_index ON
-schema_.artists (stage_name);
+schema_.artists USING GIN (stage_name);
 
 CREATE INDEX songs_title_index ON 
-schema_.songs (title);
+schema_.songs USING GIN (title);
 
 CREATE INDEX releases_title_index ON 
-schema_.releases (title);
+schema_.releases USING GIN (title);
 
 --time indexes
 
 CREATE INDEX streams_stream_timestamp_index ON 
-schema_.streams (stream_timestamp);
+schema_.streams (stream_timestamp,user_id, song_id);
