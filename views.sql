@@ -91,3 +91,9 @@ SELECT * FROM schema_.get_user_listening_stats_by_count(INTERVAL '1 year');
 
 CREATE MATERIALIZED VIEW v_lifetime_user_listening_stats_by_count AS
 SELECT * FROM schema_.get_user_listening_stats_by_count(NULL);
+
+
+--TODO get_user_listening_stats_by_duration ?
+--v_playlist_summary
+--function playlist_view - jakie piosenki sa w playliscie kto dodal kiedy itp...
+--v_release_ratings
