@@ -233,27 +233,6 @@ begin
 end
 $$;
 
-
---
--- Name: check_user_has_streaming_account_after_delete(); Type: FUNCTION; Schema: schema_; Owner: -
---
-
-CREATE FUNCTION schema_.check_user_has_streaming_account_after_delete() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-begin
-	if not exists (
-		select 1
-		from schema_.streaming_accounts
-		where user_id=old.user_id
-	) then
-		raise exception 'User (id=%) must have at least one streaming account connected.', old.user_id;
-	end if;
-	return old;
-end
-$$;
-
-
 --
 -- Name: get_artist_follower_count(integer); Type: FUNCTION; Schema: schema_; Owner: -
 --

@@ -3,3 +3,5 @@ deleted trash from public schema
 deleted labels and releases_labels
 deleted trg_release_must_have_artist_after_delete
 deleted check_release_has_song_after_delete
+deleted check_song_has_artist_after_delete
+deleted check_user_has_streaming_account_after_delete
