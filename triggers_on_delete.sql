@@ -10,6 +10,9 @@ CREATE OR REPLACE RULE releases_on_delete
 AS ON DELETE TO schema_.releases
 DO INSTEAD NOTHING;
 
+CREATE OR REPLACE RULE streaming_accounts_on_delete
+AS ON DELETE TO schema_.streaming_accounts
+DO INSTEAD NOTHING;
 
 
 CREATE OR REPLACE RULE soft_delete_playlists AS
