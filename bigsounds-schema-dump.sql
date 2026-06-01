@@ -192,25 +192,6 @@ end
 $$;
 
 
---
--- Name: check_song_has_artist_after_delete(); Type: FUNCTION; Schema: schema_; Owner: -
---
-
-CREATE FUNCTION schema_.check_song_has_artist_after_delete() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-begin
-	if not exists (
-		select 1
-		from schema_.songs_artists
-		where song_id=old.song_id
-	) then
-		raise exception 'Song (id=%) must have at least one artist.', old.song_id;
-	end if;
-	return old;
-end
-$$;
-
 
 --
 -- Name: check_song_has_release(); Type: FUNCTION; Schema: schema_; Owner: -
@@ -3128,13 +3109,6 @@ CREATE CONSTRAINT TRIGGER trg_release_must_have_song AFTER INSERT ON schema_.rel
 --
 
 CREATE CONSTRAINT TRIGGER trg_song_must_have_artist AFTER INSERT OR UPDATE ON schema_.songs DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION schema_.check_song_has_artist();
-
-
---
--- Name: songs_artists trg_song_must_have_artist_after_delete; Type: TRIGGER; Schema: schema_; Owner: -
---
-
-CREATE CONSTRAINT TRIGGER trg_song_must_have_artist_after_delete AFTER DELETE ON schema_.songs_artists DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION schema_.check_song_has_artist_after_delete();
 
 
 --
