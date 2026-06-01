@@ -2,3 +2,4 @@ moved all enums to schema schema_ (from public)
 deleted trash from public schema
 deleted labels and releases_labels
 deleted trg_release_must_have_artist_after_delete
+deleted check_release_has_song_after_delete
