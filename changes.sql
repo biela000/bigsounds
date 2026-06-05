@@ -1,3 +1,4 @@
+BEGIN;
 CREATE TABLE schema_.artists_bands (
     artist_id integer NOT NULL REFERENCES schema_.artists(id) ON DELETE CASCADE,
     band_id integer NOT NULL REFERENCES schema_.artists(id) ON DELETE CASCADE,
@@ -50,3 +51,5 @@ DROP FUNCTION IF EXISTS schema_.check_release_has_song_after_delete() CASCADE;
 DROP FUNCTION IF EXISTS schema_.check_song_has_artist_after_delete() CASCADE;
 
 DROP FUNCTION IF EXISTS schema_.check_user_has_streaming_account_after_delete() CASCADE;
+
+COMMIT;
