@@ -113,7 +113,7 @@ CREATE OR REPLACE RULE soft_delete_users AS
     DO INSTEAD
         UPDATE schema_.users
         SET date_left = now()
-        WHERE user_id = OLD.user_id 
+        WHERE id = OLD.id
           AND name = OLD.name
           AND passwd = OLD.passwd
           AND date_joined = OLD.date_joined
