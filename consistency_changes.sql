@@ -277,7 +277,7 @@ BEGIN
             SELECT 1 FROM schema_.release_covers 
             WHERE id = NEW.main_cover_id 
               AND release_id = NEW.id 
-              AND used_until IS NULL -- This strictly enforces the active state
+              AND used_until IS NULL 
         ) THEN
             RAISE EXCEPTION 'main_cover_id must belong to this release and cannot be an archived cover.';
         END IF;
@@ -285,5 +285,55 @@ BEGIN
     RETURN NEW;
 END;
 $$;
+
+
+CREATE OR REPLACE FUNCTION schema_.cascade_playlist_soft_delete() 
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.date_removed IS NOT NULL AND OLD.date_removed IS NULL THEN
+        UPDATE schema_.playlist_songs SET date_removed = NEW.date_removed 
+        WHERE playlist_id = NEW.id AND date_removed IS NULL;
+        
+        UPDATE schema_.playlist_likes SET date_removed = NEW.date_removed 
+        WHERE playlist_id = NEW.id AND date_removed IS NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_cascade_playlist_soft_delete
+AFTER UPDATE OF date_removed ON schema_.playlists
+FOR EACH ROW EXECUTE FUNCTION schema_.cascade_playlist_soft_delete();
+
+
+ALTER TABLE schema_.import_requests DROP CONSTRAINT cns_import_requests;
+ALTER TABLE schema_.import_requests 
+    ADD CONSTRAINT cns_import_requests 
+    CHECK (completed_date IS NULL OR upload_date <= completed_date);
+
+
+
+
+ALTER TABLE schema_.genres 
+    ADD CONSTRAINT chk_no_self_subgenre CHECK (id <> subgenre_of);
+
+
+
+ALTER TABLE schema_.playlist_likes DROP CONSTRAINT playlist_likes_possible;
+
+CREATE OR REPLACE FUNCTION schema_.check_can_like_playlist() RETURNS trigger AS $$
+BEGIN
+    IF NOT schema_.can_like_playlist(NEW.playlist_id, NEW.user_id) THEN
+        RAISE EXCEPTION 'User does not have permission to like this private playlist.';
+    END IF;
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_playlist_like_permission
+BEFORE INSERT OR UPDATE ON schema_.playlist_likes
+FOR EACH ROW EXECUTE FUNCTION schema_.check_can_like_playlist();
+
+
 
 COMMIT;
