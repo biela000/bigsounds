@@ -220,11 +220,21 @@ BEGIN
         
         UPDATE schema_.reviews SET date_removed = NEW.date_left 
         WHERE user_id = NEW.id AND date_removed IS NULL;
+
+                UPDATE schema_.playlists 
+        SET date_removed = NEW.date_left
+        WHERE id IN (
+            SELECT playlist_id 
+            FROM schema_.playlist_owners 
+            GROUP BY playlist_id 
+            HAVING COUNT(user_id) = 1 AND MAX(user_id) = NEW.id
+        ) AND date_removed IS NULL;
         
     END IF;
     RETURN NEW;
 END;
 $$;
+
 
 
 CREATE TRIGGER trg_cascade_user_soft_delete

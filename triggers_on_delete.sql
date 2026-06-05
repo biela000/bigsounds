@@ -105,3 +105,16 @@ CREATE OR REPLACE RULE soft_delete_user_follows AS
           AND followed_user_id = OLD.followed_user_id 
           AND date_from = OLD.date_from
           AND date_until IS NULL;
+
+
+
+CREATE OR REPLACE RULE soft_delete_users AS
+    ON DELETE TO schema_.users
+    DO INSTEAD
+        UPDATE schema_.users
+        SET date_left = now()
+        WHERE user_id = OLD.user_id 
+          AND name = OLD.name
+          AND passwd = OLD.passwd
+          AND date_joined = OLD.date_joined
+          AND date_left IS NULL;
